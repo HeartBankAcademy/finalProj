@@ -2,14 +2,31 @@ pragma solidity ^0.4.15;
 
 contract StoreHash {
 
-    uint task_id;  //person_id????????///???/////////?????//////??????
-    mapping (uint => string) id_to_hashes;  
-    mapping(uint => addres) task_to_parent;
+    uint private task_id;  
+    mapping (uint => string) private id_to_hashes;  
+    mapping(uint => address) task_to_parent;
     mapping(address => address[]) parent_to_children;
 
-    //MODIFIERs=
-    //onlyParent
-    //onlyChildren can see the specific id modifier
+    function addChildren(address child) {
+       parent_to_children[msg.sender].push(child);
+    }
+    
+   //onlyParent verifies a completed task_id
+    modifier onlyParent(uint id) {
+        require(msg.sender == task_to_parent[id]);
+        _;
+    }
+    
+   //onlyChild logs that he completed a task
+    function childBelongsToTask(uint id) internal view returns(bool) {
+        address parent = task_to_parent[id];
+        address[] memory array = parent_to_children[parent];
+        for (uint i = 0; i < array.length; i++) {
+            if (msg.sender == array[i]) 
+                return true;
+        }
+        return false;
+    }
     
     function addHash(string _ipfsHash) public {
         task_id++;  //use safemath.        

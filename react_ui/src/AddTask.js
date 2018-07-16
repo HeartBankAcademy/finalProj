@@ -36,7 +36,8 @@ class AddTask extends Component{
         this.setState({imgBuffer : buffer});
     }
     //add a json obj called "doc" to ipfs and add its hash to ethereum.Also get its taskId
-    async addJSONToIpfs(doc) {
+    async addJSONToIpfs(doc,payment) {
+        let paymentFinney = web3.utils.toWei(payment, "finney");
         const buf = await Buffer.from(JSON.stringify(doc));
        
         await ipfs.add(buf, (err,files) => {            
@@ -44,11 +45,11 @@ class AddTask extends Component{
             let _ipfsHash = files[0].hash;
             
             //add the ipfsHash to ethereum!
-            const {addHash} = this.props.contractInstance;
-            addHash(_ipfsHash, (err, transHash) => {
+            const {addTask} = this.props.contractInstance;
+            addTask(_ipfsHash, paymentFinney, (err, transHash) => {
                 this.setState({
                     transactionHash: transHash,
-                    ipfsHash: _ipfsHash
+                    ipfsHash: _ipfsHash //would it change on simultaneous add???
                 });
             });
 
@@ -69,7 +70,6 @@ class AddTask extends Component{
         let _deadline = document.querySelector('input[name=deadline]').value;
         let _reward = document.querySelector('input[name=reward]').value;
         let _imgIpfsHash = null;
-
         //create JSON obj
         const doc = {
             descriptionOfTask: _taskDesc, 
@@ -89,19 +89,20 @@ class AddTask extends Component{
                 console.log(err,files[0]);
                 _imgIpfsHash = files[0].hash;
                 doc.IpfsHashOfImageUploaded = _imgIpfsHash;  
-                this.addJSONToIpfs(doc);              
+                this.addJSONToIpfs(doc,_reward);              
             });
             this.state.imgBuffer = ''; //set it back to null.           
         } else { //go ahead with no image:
-            await this.addJSONToIpfs(doc);
+            await this.addJSONToIpfs(doc,_reward);
         }
     }
 	
 	render() {
 		return (
-      <div className="AddTask">
+      <div id="addTask" className="AddTask">
         <header className="header">
-          <h1 id="addTask" className="title">Add Task Details. Then Store in IPFS and in Ethereum and Give you Task Id!</h1>
+          <hr />
+          <h1 className="title">Add Task Details. Then Store in IPFS and in Ethereum and Give you Task Id!</h1>
         </header>
         <br />
         <form onSubmit = { this.handleSubmit }>
@@ -148,7 +149,8 @@ class AddTask extends Component{
           </tbody>
         </table>
       </div>
-    )}
+        );
+    }
 }
 
 export default AddTask;

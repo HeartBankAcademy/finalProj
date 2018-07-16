@@ -42,12 +42,10 @@ class ViewTask extends Component{
     }
 
     async getTaskDetails(_id) {
-        const {getCorrespondingHash} = this.props.contractInstance;        
-        await getCorrespondingHash(_id, (err, hash) => {
-        //save result in hash var.
-            console.log(err,hash);
-
-            ipfs.cat(hash, (err,buffer) => {
+        const {getCorrespondingTask} = this.props.contractInstance;        
+        await getCorrespondingTask(_id, (err, result) => {
+            
+            ipfs.cat(result[0], (err,buffer) => {
                 let temp = JSON.parse(buffer.toString()); 
                 console.log(temp);
                 this.setState({
@@ -57,7 +55,7 @@ class ViewTask extends Component{
                     imgIpfsHash: temp.IpfsHashOfImageUploaded
                 }); //setState
             })//ipfs.cat()
-        })//getCorrespondingHash()                   
+        })//getCorrespondingTask()                   
     }
 
 	render() {    
@@ -97,14 +95,14 @@ class ViewTask extends Component{
         
         let error;
         if(this.state.showError) {
-          error = <p>You may have entered either an invalid task id, or a task id that doesn't belong to you. Try again!</p>;
+          error = <p>You may have entered either an invalid task id. Try again!</p>;
         }
     
         return (
-          <div className="ViewTask">
+          <div id="viewTask" className="ViewTask">
             <hr />
             <h1> Get task information by entering a task id </h1>
-            <form id="viewTask" onSubmit = { this.handleSubmitTaskId }>
+            <form  onSubmit = { this.handleSubmitTaskId }>
               <input type="text" placeholder="enter task id" name="task_id"/>
               <input type="submit" />
             </form>

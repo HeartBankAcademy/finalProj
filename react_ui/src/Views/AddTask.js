@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import web3 from './web3';
-import ipfs from './ipfs';
+import web3 from '../utils/web3';
+import ipfs from '../utils/ipfs';
 
 class AddTask extends Component{
     constructor(props) {
@@ -102,7 +102,7 @@ class AddTask extends Component{
       <div id="addTask" className="AddTask">
         <header className="header">
           <hr />
-          <h1 className="title">Add Task Details. Then Store in IPFS and in Ethereum and Give you Task Id!</h1>
+          <h2 className="title">Add Task Details. Then Store in IPFS and in Ethereum and Give you Task Id!</h2>
         </header>
         <br />
         <form onSubmit = { this.handleSubmit }>

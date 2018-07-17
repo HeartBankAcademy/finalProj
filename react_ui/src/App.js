@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
 import './App.css';
-import AddChildren from './AddChildren';
-import AddTask from './AddTask';
-import ViewTask from './ViewTask';
+import AddChildren from './Views/AddChildren';
+import AddTask from './Views/AddTask';
+import ViewTask from './Views/ViewTask';
+import DoingTask from './Views/DoingTask';
+import CompletedTask from './Views/CompletedTask';
+import VerifyTask from './Views/VerifyTask';
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     const contractABI = window.web3.eth.contract(
-      [{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"uint256"}],"name":"parent_to_children","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_ipfsHash","type":"string"},{"name":"payment","type":"uint256"}],"name":"addTask","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"child","type":"address"}],"name":"addChildren","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_taskId","type":"uint256"}],"name":"doingATask","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"completedATask","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"verifyTask","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"getLatestTaskId","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"id","type":"uint256"}],"name":"getCorrespondingTask","outputs":[{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"},{"name":"","type":"uint256"},{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"}]
+      [{"constant":true,"inputs":[],"name":"task_id","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getLatestTaskId","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"id_to_task","outputs":[{"name":"ipfsHash","type":"string"},{"name":"childDoing","type":"address"},{"name":"parent","type":"address"},{"name":"payment","type":"uint256"},{"name":"completed","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"uint256"}],"name":"parent_to_children","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"id","type":"uint256"}],"name":"getCorrespondingTask","outputs":[{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"},{"name":"","type":"uint256"},{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_ipfsHash","type":"string"},{"name":"payment","type":"uint256"}],"name":"addTask","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"child","type":"address"}],"name":"addChildren","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_taskId","type":"uint256"}],"name":"doingATask","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"completedATask","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"verifyTask","outputs":[],"payable":true,"stateMutability":"payable","type":"function"}]
     ); //abi
 
     this.state = {
-        contractInstance: contractABI.at('0xf5a9eae0c325d1665149307ca9c87c8b7b613ccf') //addr
+        contractInstance: contractABI.at('0x9caa31ddba263da2a3b6eeb10266939935855bfa') //addr
      }
   }
 
@@ -24,24 +27,44 @@ class App extends Component {
           <h1 className="App-title">Assign Task to your kids!</h1>
         </header>  
         
+        <p>Welcome! Here are the steps to add a task, and leave your children to do, without the hassle of you having to continuously repeat the tasks! </p>
+        <p>Before we go ahead,<strong>ensure that you have metamask installed! And there may be alerts popping up if you are doing something wrong</strong>(such as verifying the wrong task etc)</p>
+        
         <ul>
+          <li><a href="#instructions">Instructions/ How to use</a></li>
           <li><a href="#addChildren">Add Children</a></li>
           <li><a href="#addTask">Add Task</a></li>
           <li><a href="#viewTask">View a Task</a></li>
+          <li><a href="#logDoing">Confirm that you are doing the task </a></li>
           <li><a href="#logCompleted">Log a task as completed</a></li>
           <li><a href="#verifyCompleted">Verify that a task is completed</a></li>
         </ul>      
         <hr />
+
+        <h4 id="instructions"> For parents: </h4>
+        <p>First, add the children accounts (their ethereum addresses). You don't need to add an account that you have already added!
+          <br/> 
+          Second, add the task!
+          Now you may tell your kids the task ids.
+          If they have completed the task ids, and they have logged it onto the system, then you can "verify the task". If the task has been completed to your liking, simply go to "Verify that a task is completed" section. In the metamask pop-up, youshall see that "amount" field is the reward for the task set :)
+        </p>
+        <h4> For kids/task do-ers: </h4>
+        <p>"View Task" - enter the task id that your parent may have given to you! If the task (and its reward) is to your liking, please go to "Confirm Doing a Task section".
+        Once your task is complete, please go to "Confirm a Task as Done" section.
+        Finally, wait for your parent to verify the task so you can get paid!
+        </p>
+
         <AddChildren 
         id="addChildren" contractInstance={this.state.contractInstance}/>
         <AddTask id="addTask" contractInstance={this.state.contractInstance}/>
         <ViewTask id="viewTask" contractInstance={this.state.contractInstance}/>
-
+        <DoingTask id="logDoing"contractInstance={this.state.contractInstance}/>
+        <CompletedTask id="logCompleted"contractInstance={this.state.contractInstance}/>
+        <VerifyTask id="verifyCompleted"contractInstance={this.state.contractInstance}/>  
       </div>
     );
   }
 }
 
 export default App;
-
 

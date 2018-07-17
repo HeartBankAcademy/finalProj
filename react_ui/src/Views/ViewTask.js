@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import web3 from './web3';
-import ipfs from './ipfs';
+import ipfs from '../utils/ipfs';
 
 class ViewTask extends Component{
     constructor(props) {
@@ -101,7 +100,7 @@ class ViewTask extends Component{
         return (
           <div id="viewTask" className="ViewTask">
             <hr />
-            <h1> Get task information by entering a task id </h1>
+            <h2> Get task information by entering a task id </h2>
             <form  onSubmit = { this.handleSubmitTaskId }>
               <input type="text" placeholder="enter task id" name="task_id"/>
               <input type="submit" />

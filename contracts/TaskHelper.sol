@@ -11,7 +11,6 @@ contract TaskHelper {
         string ipfsHash;
         address childDoing;
         address parent;
-        uint payment;
         bool completed;
     }
     
@@ -53,9 +52,9 @@ contract TaskHelper {
 	  * @param id the task id
 	  */
     function getCorrespondingTask(uint id) public view 
-        returns (string, address, address, uint, bool) 
+        returns (string, address, address, bool) 
         {
         Task memory task = id_to_task[id];
-        return (task.ipfsHash, task.parent, task.childDoing, task.payment, task.completed);
+        return (task.ipfsHash, task.parent, task.childDoing, task.completed);
     }
 }

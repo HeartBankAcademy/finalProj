@@ -13,24 +13,17 @@ contract TaskManager is TaskHelper {
         require(msg.sender==parent);
         _;
     }
-    
-    modifier checkEnough(uint _price) { 
-        require(msg.value >= _price); 
-        _;
-    }
 
 	/** @notice create a new task
 	  * @dev initialize a struct Task and save it on a mapping with 
 		corresponding id
       * @param _ipfsHash the ipfsHash where Task data is stored.
-      * @param payment payment (in unit of wei).
 	  */
-    function addTask(string _ipfsHash, uint payment) public {
+    function addTask(string _ipfsHash) public {
         task_id++;  //use safemath.     
         Task memory task = id_to_task[task_id];
         task.ipfsHash = _ipfsHash;
         task.parent = msg.sender;
-        task.payment = payment;
         id_to_task[task_id] = task;
     } 
     
@@ -67,18 +60,12 @@ contract TaskManager is TaskHelper {
     
 	/** @notice parent verifies the task and pays.
 	  * @dev  must check that the right parent/address calls the method, 
-		pays enough. Also refund amount if extra.
+		and pays an amount.
       * @param id the task id
 	  */
-    function verifyTask(uint id) payable
-        onlyParent(id) 
-        checkEnough(id_to_task[id].payment)
-        {        
+    function verifyTask(uint id) payable onlyParent(id) {        
         Task memory task = id_to_task[id];    
-        require(task.completed);        
-        uint amountToRefund = msg.value - task.payment;
-        task.childDoing.transfer(task.payment);
-        //also transfer any extra funds back to sender (parent)
-        task.parent.transfer(amountToRefund);
+        require(task.completed);
+        task.childDoing.transfer(msg.value);
     }
 }

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import web3 from '../utils/web3';
 import ipfs from '../utils/ipfs';
 
 class AddTask extends Component{
@@ -36,8 +35,7 @@ class AddTask extends Component{
         this.setState({imgBuffer : buffer});
     }
     //add a json obj called "doc" to ipfs and add its hash to ethereum.Also get its taskId
-    async addJSONToIpfs(doc,payment) {
-        let paymentFinney = web3.utils.toWei(payment, "finney");
+    async addJSONToIpfs(doc) {
         const buf = await Buffer.from(JSON.stringify(doc));
        
         await ipfs.add(buf, (err,files) => {            
@@ -46,7 +44,7 @@ class AddTask extends Component{
             
             //add the ipfsHash to ethereum!
             const {addTask} = this.props.contractInstance;
-            addTask(_ipfsHash, paymentFinney, (err, transHash) => {
+            addTask(_ipfsHash, (err, transHash) => {
                 this.setState({
                     transactionHash: transHash,
                     ipfsHash: _ipfsHash //would it change on simultaneous add???
@@ -89,11 +87,11 @@ class AddTask extends Component{
                 console.log(err,files[0]);
                 _imgIpfsHash = files[0].hash;
                 doc.IpfsHashOfImageUploaded = _imgIpfsHash;  
-                this.addJSONToIpfs(doc,_reward);              
+                this.addJSONToIpfs(doc,);              
             });
             this.state.imgBuffer = ''; //set it back to null.           
         } else { //go ahead with no image:
-            await this.addJSONToIpfs(doc,_reward);
+            await this.addJSONToIpfs(doc);
         }
     }
 	
@@ -102,7 +100,8 @@ class AddTask extends Component{
       <div id="addTask" className="AddTask">
         <header className="header">
           <hr />
-          <h2 className="title">Add Task Details. Then Store in IPFS and in Ethereum and Give you Task Id!</h2>
+          <h2 className="title">Add Task Details.</h2>
+          <p>These will be stored on IPFS and Ethereum</p>
         </header>
         <br />
         <form onSubmit = { this.handleSubmit }>
@@ -110,15 +109,15 @@ class AddTask extends Component{
           <input type = "text" name = "taskDesc" placeholder = "Description" />
           <br />
           <br />
-          The reward you are willing to give in FINNEY (1 ETHER = 1000 FINNEY)
+          Reward (in FINNEY - 1 ETHER = 1000 FINNEY):
           <input type = "text" name = "reward" placeholder = "reward" />
           <br />
           <br />
-          By when should the task be completed by: 
+          Task Deadline: 
           <input type = "text" name = "deadline" placeholder = "deadline" />
           <br/>
           <br/>          
-          If you want to add an image associated to your task:
+          Upload an Image (if you want to):
           <input type = "file" accept = "image/*" 
           onChange = {this.captureFile} />
           <br/>

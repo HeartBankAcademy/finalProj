@@ -19,12 +19,11 @@ class AddChildren extends Component{
         
         let _addr = document.querySelector('input[name=address]').value;
         if(!web3.utils.isAddress(_addr)) {
-            console.log('fasle');
             alert("the address entered is invalid. Please try again!");
         } else {
-            console.log('h1');
             await addChildren(_addr, (err,txhash)=> {
                 if(err){
+                    console.log(err);
                     alert("It seems like you are trying to add an address that you have already added!");
                 } else {
                     this.setState({

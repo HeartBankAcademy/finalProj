@@ -22,7 +22,8 @@ class ViewTask extends Component{
         e.preventDefault(); 
         const {getLatestTaskId} = this.props.contractInstance;
         getLatestTaskId((err, id) => {
-            id = id.toNumber();
+            console.log(id);
+            id = id.toNumber();            
             let _id = document.querySelector('input[name=task_id]').value;
 //don't allow checking for invalid task ids!
             if (_id<0 || _id>id){

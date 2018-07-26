@@ -22,11 +22,11 @@ class ViewTask extends Component{
         e.preventDefault(); 
         const {getLatestTaskId} = this.props.contractInstance;
         getLatestTaskId((err, id) => {
-            console.log(id);
-            id = id.toNumber();            
+            id = id.toNumber();  
+			console.log(id);
             let _id = document.querySelector('input[name=task_id]').value;
 //don't allow checking for invalid task ids!
-            if (_id<0 || _id>id){
+            if (_id<1 || _id>id){
                 this.setState({
                     showError: true,
                     showTaskId: false
@@ -44,10 +44,9 @@ class ViewTask extends Component{
     async getTaskDetails(_id) {
         const {getCorrespondingTask} = this.props.contractInstance;        
         await getCorrespondingTask(_id, (err, result) => {
-            
+            console.log(result);
             ipfs.cat(result[0], (err,buffer) => {
                 let temp = JSON.parse(buffer.toString()); 
-                console.log(temp);
                 this.setState({
                     taskDesc: temp.descriptionOfTask,
                     reward: temp.rewardYouEarn,

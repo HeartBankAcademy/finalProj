@@ -16,7 +16,7 @@ class App extends Component {
     ); //abi
 
     this.state = {
-        contractInstance: contractABI.at('0x2120353cd6e15991a3f3a3e9105489c99dd717bd') //addr
+        contractInstance: contractABI.at('0x1ad592e252d239351904bc722427e38ec02b9ae3') //addr
      }
   }
 

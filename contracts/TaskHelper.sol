@@ -4,14 +4,16 @@ pragma solidity ^0.4.15;
 contract TaskHelper {
 	//state variables.
     uint public task_id;
-    mapping(address => address[]) public parent_to_children;
-    mapping(uint => Task) public id_to_task;
+	
+    mapping(address => address[]) public parentToChildren;
+    mapping(uint => Task) public idToTask;
 
     struct Task {
         string ipfsHash;
         address childDoing;
         address parent;
         bool completed;
+		bool verified;
     }
     
 	/** @notice Checks if a child (address) is associated to a particular parent (address).
@@ -24,7 +26,7 @@ contract TaskHelper {
         view 
         returns (bool) 
         {
-        address[] memory array = parent_to_children[parent];
+        address[] memory array = parentToChildren[parent];
         for (uint i = 0; i < array.length; i++) {
             if (child == array[i]) 
                 return true;
@@ -38,7 +40,7 @@ contract TaskHelper {
 	  * @return bool if the child is associated to the task or no.
 	  */
     function doesChildBelongsToTask(uint id, address child) internal view returns(bool) {
-        address parent = id_to_task[id].parent;
+        address parent = idToTask[id].parent;
         return doesChildBelongsToParent(parent, child);
     }
     
@@ -52,9 +54,9 @@ contract TaskHelper {
 	  * @param id the task id
 	  */
     function getCorrespondingTask(uint id) public view 
-        returns (string, address, address, bool) 
+        returns (string, address, address, bool, bool) 
         {
-        Task memory task = id_to_task[id];
-        return (task.ipfsHash, task.parent, task.childDoing, task.completed);
+        Task memory task = idToTask[id];
+        return (task.ipfsHash, task.parent, task.childDoing, task.completed, task.verified);
     }
 }

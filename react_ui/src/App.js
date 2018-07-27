@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import contractInstance from './utils/contractSetup';
 import './App.css';
+import ShowTasks from './Views/ShowTasks';
 import AddChildren from './Views/AddChildren';
 import AddTask from './Views/AddTask';
 import ViewTask from './Views/ViewTask';
@@ -8,7 +10,7 @@ import CompletedTask from './Views/CompletedTask';
 import VerifyTask from './Views/VerifyTask';
 
 class App extends Component {
-  constructor(props) {
+  /*constructor(props) {
     super(props);
 
     const contractABI = window.web3.eth.contract(
@@ -18,7 +20,7 @@ class App extends Component {
     this.state = {
         contractInstance: contractABI.at('0x1ad592e252d239351904bc722427e38ec02b9ae3') //addr
      }
-  }
+  }*/
 
   render() {
     return (
@@ -54,13 +56,14 @@ class App extends Component {
         Finally, wait for your parent to verify the task so you can get paid!
         </p>
 
+	    <ShowTasks id="showTasks" contractInstance={contractInstance}/>
         <AddChildren 
-        id="addChildren" contractInstance={this.state.contractInstance}/>
-        <AddTask id="addTask" contractInstance={this.state.contractInstance}/>
-        <ViewTask id="viewTask" contractInstance={this.state.contractInstance}/>
-        <DoingTask id="logDoing"contractInstance={this.state.contractInstance}/>
-        <CompletedTask id="logCompleted"contractInstance={this.state.contractInstance}/>
-        <VerifyTask id="verifyCompleted"contractInstance={this.state.contractInstance}/>  
+        id="addChildren" contractInstance={contractInstance}/>
+        <AddTask id="addTask" contractInstance={contractInstance}/>
+        <ViewTask id="viewTask" contractInstance={contractInstance}/>
+        <DoingTask id="logDoing"contractInstance={contractInstance}/>
+        <CompletedTask id="logCompleted"contractInstance={contractInstance}/>
+        <VerifyTask id="verifyCompleted"contractInstance={contractInstance}/>  
       </div>
     );
   }

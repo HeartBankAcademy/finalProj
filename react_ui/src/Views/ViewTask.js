@@ -44,7 +44,6 @@ class ViewTask extends Component{
     async getTaskDetails(_id) {
         const {getCorrespondingTask} = this.props.contractInstance;        
         await getCorrespondingTask(_id, (err, result) => {
-            console.log(result);
             ipfs.cat(result[0], (err,buffer) => {
                 let temp = JSON.parse(buffer.toString()); 
                 this.setState({

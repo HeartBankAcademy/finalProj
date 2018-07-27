@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import contractInstance from './utils/contractSetup';
 import './App.css';
-import ShowTasks from './Views/ShowTasks';
+import GetTasks from './Views/GetTasks';
 import AddChildren from './Views/AddChildren';
 import AddTask from './Views/AddTask';
 import ViewTask from './Views/ViewTask';
@@ -56,7 +56,7 @@ class App extends Component {
         Finally, wait for your parent to verify the task so you can get paid!
         </p>
 
-	    <ShowTasks id="showTasks" contractInstance={contractInstance}/>
+	    <GetTasks id="showTasks" contractInstance={contractInstance}/>
         <AddChildren 
         id="addChildren" contractInstance={contractInstance}/>
         <AddTask id="addTask" contractInstance={contractInstance}/>

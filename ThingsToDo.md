@@ -20,4 +20,3 @@ README.md
   
   design_pattern_desicions.md
   avoiding_common_attacks.md
-

@@ -7,30 +7,30 @@ class GetTasks extends Component{
         super(props);
 
         this.state = {
-			address: null,
 			tasksDelegated_uncompleted: [],
 			tasksDelegated_unverified: [],
 			tasksDelegated_verified: [],
 			tasksDoing: [],
-			tasksCompleted: []
+			tasksCompleted: [],
+			show: [false,false,false,false,false]
         }
-		this.initialState = this.state; //DEEP CLONE IF THIS DOESNT WORK.
 		
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.resetState = this.resetState.bind(this);
     } 
 	
-	addTaskToArray(arr, taskId) {
-		this.setState({ arr: [...this.state.arr, taskId] });
-	}
-	
 	async handleSubmit(e) {
 		e.preventDefault();
+		this.resetState();
 		let _addr = document.querySelector('input[name=addr]').value;
-		let i;
-		let id;
 		let taskDetails = [];
-		
+		//to avoid async behavior: create 5 temp arrays (one for each array of this.state).
+		let temp1 = [];
+		let temp2 = [];
+		let temp3 = [];
+		let temp4 = [];
+		let temp5 = [];
+		let tempShow = this.state.show;
 		const {getCorrespondingTask} = this.props.contractInstance;
 		const {TaskCreated} = this.props.contractInstance;
 		const {TaskDoing} = this.props.contractInstance;
@@ -38,62 +38,86 @@ class GetTasks extends Component{
 		
 		if(!web3.utils.isAddress(_addr))
             alert("the address entered is invalid. Please try again!");
-        else {
-			this.setState({address: _addr});
+        else {	
 			await TaskCreated({parent: _addr}, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
 				if (!error) {
 			  		console.log(JSON.stringify(eventResult));
-					for(i=0; i<eventResult.length; i++) {
-						id = eventResult[i].args.id.toNumber();
-						getCorrespondingTask(id, (err,res) => {
-							console.log(err,res);
-							taskDetails = [id, res[0], res[2], res[3], res[4]];
-							if(!taskDetails[3]) //if not completed -> add to tasksDelegated_uncompleted
-								this.setState({ tasksDelegated_uncompleted: [...this.state.tasksDelegated_uncompleted, taskDetails.splice(-2)] });
-							else if(!taskDetails[4]) //if not verified -> add to tasksDelegated_unverified
-								this.setState({ tasksDelegated_unverified: [...this.state.tasksDelegated_unverified, taskDetails.splice(-2)] });
-							else if (taskDetails[4])//verfied -> add to tasksDelegated_verified	
-								this.setState({ tasksDelegated_verified: [...this.state.tasksDelegated_verified, taskDetails.splice(-2)] });
+					for(let i=0; i<eventResult.length; i++) {
+						let _id = eventResult[i].args.id.toNumber();						
+						getCorrespondingTask(_id, (err,res) => {
+							taskDetails = [_id, res[0], res[2], res[3], res[4]];
+							if(!taskDetails[3]) { //if not completed -> add to tasksDelegated_uncompleted
+								temp1.push(taskDetails.slice(0,3));
+								this.setState({ tasksDelegated_uncompleted: temp1 });
+								tempShow[0] = true;
+								console.log("length now is: " + this.state.tasksDelegated_uncompleted.length);
+							} else if(!taskDetails[4]) {//if not verified -> add to tasksDelegated_unverified
+								temp2.push(taskDetails.slice(0,3));
+								this.setState({ tasksDelegated_unverified: temp2 });
+								tempShow[1] = true;
+							} else if (taskDetails[4]) {//verfied -> add to tasksDelegated_verified	
+								temp3.push(taskDetails.slice(0,3));
+								this.setState({ tasksDelegated_verified: temp3 });
+								tempShow[2] = true;								
+							}							
 						}) //getCorrespondingTask()
 					} //for loop.
-			  	} 
+					this.setState({ show: tempShow });
+			  	} 				
 			}); //TaskCreated()
-			
+						
 			await TaskDoing({childDoing: _addr}, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
 				if (!error) {
 			  		console.log(JSON.stringify(eventResult));
-					for(i=0; i<eventResult.length; i++) {
-						id = eventResult[i].args.id.toNumber();
+					for(let i=0; i<eventResult.length; i++) {
+						let id = eventResult[i].args.id.toNumber();
 						getCorrespondingTask(id, (err,res) => {
 							console.log(err,res);
-							taskDetails = [id, res[0], res[1], res[3]];
-							if(!taskDetails[3]) //if not completed -> add to tasksDoing
-								this.setState({ tasksDoing: [...this.state.tasksDoing, taskDetails.splice(-1)] });
+							taskDetails = [id, res[0], res[1], res[3]];							
+							if(!taskDetails[3]) {//if not completed -> add to tasksDoing
+								temp4.push(taskDetails.slice(0,3));
+								this.setState({ tasksDoing: temp4 });	
+								tempShow[3] = true;								
+							}
 						}) //getCorrespondingTask()
 					} //for loop.
+					this.setState({ show: tempShow });
 			  	} 
 			}); //TaskDoing()
 			
 			await TaskCompleted({childDoing: _addr}, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
 				if (!error) {
 			  		console.log(JSON.stringify(eventResult));
-					for(i=0; i<eventResult.length; i++) {
-						id = eventResult[i].args.id.toNumber();
+					for(let i=0; i<eventResult.length; i++) {
+						let id = eventResult[i].args.id.toNumber();
 						getCorrespondingTask(id, (err,res) => {
-							console.log(err,res);
+							//console.log(err,res);
 							taskDetails = [id, res[0], res[1], res[4]];
-							if(!taskDetails[3]) //if not verfified -> add to tasksCompleted
-								this.setState({ tasksCompleted: [...this.state.tasksCompleted, taskDetails.splice(-1)] });
+							
+							if(!taskDetails[3]) {//if not verfified -> add to tasksCompleted
+								temp5.push(taskDetails.slice(0,3));
+								this.setState({ tasksCompleted: temp5 });
+								tempShow[4] = true;								
+							}
 						}) //getCorrespondingTask()
 					} //for loop.
+					this.setState({ show: tempShow });
 			  	} 
 			}); //TaskCompleted()
-		} //else
+		} //else		
 	}
 	
 	resetState() {
-		this.setState(this.initialState);
+		this.setState({
+			tasksDelegated_uncompleted: [],
+			tasksDelegated_unverified: [],
+			tasksDelegated_verified: [],
+			tasksDoing: [],
+			tasksCompleted: [],
+			show: [false,false,false,false,false]
+        })
 	}
+	
 	
 	render() {
 		return (        
@@ -106,25 +130,19 @@ class GetTasks extends Component{
               <input type="submit" />
             </form>
 			 <h4> Tasks Delegated by you </h4>
-			 <p><strong>NOTE: </strong> There are 3 sections here:</p>
-			 <ul>
-				<li>Tasks assigned, but not yet done</li>
-				<li>Tasks assigned, done but not yet verified</li>
-				<li>Tasks completed and verified </li>
-			 </ul>
-			
-			 <h4> Tasks given to you </h4>
-			 <p><strong>NOTE: </strong> There are 2 sections here:</p>
-			 <ul>
-				<li>Tasks you are currently doing</li>
-				<li>Tasks you have completed, but not yet verified</li>
-			 </ul>
-			
-			 <ShowTasks tasks={this.state.tasksDelegated_uncompleted} type={1}/>
-			 <ShowTasks tasks={this.state.tasksDelegated_unverified} type={1}/>
-			 <ShowTasks tasks={this.state.tasksDelegated_verified} type={1}/>
-			 <ShowTasks tasks={this.state.tasksDoing} type={2}/>
-			 <ShowTasks tasks={this.state.tasksCompleted} type={2}/>
+		
+			Tasks assigned, but not yet done	
+			{this.state.show[0] ? <ShowTasks tasks={this.state.tasksDelegated_uncompleted} type={1}/> : <p></p>}
+			Tasks assigned, done but not yet verified
+			{this.state.show[1] ? <ShowTasks tasks={this.state.tasksDelegated_unverified} type={1}/> : <p></p>}
+			Tasks completed and verified 
+			{this.state.show[2] ? <ShowTasks tasks={this.state.tasksDelegated_verified} type={1}/> : <p></p>}
+			<h4> Tasks given to you </h4>
+			Tasks you are currently doing
+			{this.state.show[3] ? <ShowTasks tasks={this.state.tasksDoing} type={2}/> : <p></p>}
+			Tasks you have completed, but not yet verified
+			{this.state.show[4] ? <ShowTasks tasks={this.state.tasksCompleted} type={2}/> : <p></p>}
+
           </div>
         );
     }

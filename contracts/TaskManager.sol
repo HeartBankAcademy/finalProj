@@ -50,10 +50,8 @@ contract TaskManager is TaskHelper {
       * @param _taskId the task id
 	  */
     function doingATask(uint _taskId) correctChild(_taskId) {
-        Task memory task = idToTask[_taskId];
-        require(task.childDoing==0x0000000000000000000000000000000000000000);
-        task.childDoing = msg.sender;
-        idToTask[_taskId] = task;
+        require(idToTask[_taskId].childDoing==0x0000000000000000000000000000000000000000);
+        idToTask[_taskId].childDoing = msg.sender;
 		emit TaskDoing(_taskId, msg.sender);
     }
 	
@@ -72,9 +70,9 @@ contract TaskManager is TaskHelper {
       * @param id the task id
 	  */
     function verifyTask(uint id) payable onlyParent(id) {        
-        Task memory task = idToTask[id];    
-        require(task.completed);
-		require(!task.verified);
-        task.childDoing.transfer(msg.value);
+        require(idToTask[id].completed);
+		require(!idToTask[id].verified);
+		idToTask[id].verified = true;
+        idToTask[id].childDoing.transfer(msg.value);
     }
 }

@@ -51,7 +51,7 @@ class VerifyTask extends Component{
 			else {
 				
 				console.log(this.state.selectedOption);
-        		if(this.state.selectedOption!=="yes") {	
+        		if(this.state.selectedOption==="yes") {	
 					//get the ipfs hash of the id, and find the amount assigned.
 					getCorrespondingTask(_id, (err,result) => {
 						ipfs.cat(result[0], (err,buffer) => {					
@@ -61,7 +61,6 @@ class VerifyTask extends Component{
 								let _amt= temp.rewardYouEarn.split(" ")[0];
 								console.log(_amt);
 								_amt = web3.utils.toWei(_amt, "finney"); 
-								console.log(_amt);
 								this.setState({amount:_amt});
 								//call finishVerification() - done to avoid await sync problem.
 								this.finishVerification(_id);

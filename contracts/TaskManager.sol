@@ -1,9 +1,12 @@
 pragma solidity ^0.4.15;
 import './TaskHelper.sol';
 
-/**@title */
+
+/**@title Handling theS tasks dashboard*/
 contract TaskManager is TaskHelper {
 
+	using SafeMath for uint;
+	
 	//events
 	event TaskCreated(uint id, address indexed parent);
 	event TaskDoing(uint id, address indexed childDoing);
@@ -25,7 +28,7 @@ contract TaskManager is TaskHelper {
       * @param _ipfsHash the ipfsHash where Task data is stored.
 	  */
     function addTask(string _ipfsHash) public {
-        task_id++;  //use safemath.     
+        task_id = task_id.add(1); //use safemath.     
         Task memory task = idToTask[task_id];
         task.ipfsHash = _ipfsHash;
         task.parent = msg.sender;

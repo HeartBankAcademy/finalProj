@@ -23,7 +23,6 @@ class ViewTask extends Component{
         const {getLatestTaskId} = this.props.contractInstance;
         getLatestTaskId((err, id) => {
             id = id.toNumber();  
-			console.log(id);
             let _id = document.querySelector('input[name=task_id]').value;
 //don't allow checking for invalid task ids!
             if (_id<1 || _id>id){
@@ -40,7 +39,7 @@ class ViewTask extends Component{
             } //else
         });
     }
-
+//from id, find the ipfsHash and get details for ipfs-api.
     async getTaskDetails(_id) {
         const {getCorrespondingTask} = this.props.contractInstance;        
         await getCorrespondingTask(_id, (err, result) => {
@@ -59,6 +58,7 @@ class ViewTask extends Component{
 	render() {    
         let table;
         if(this.state.showTaskId) {
+			//display table, if right task id was entered!
           table = <div>
             <table border = "1">
             <tbody>
@@ -87,13 +87,15 @@ class ViewTask extends Component{
               </tr>
             </tbody>
           </table>
-          <p><strong>NOTE:</strong> To see the image: go to gateway.ipfs.io/ipfs/(the hash)</p>
+          <p><strong>NOTE:</strong> To see the image: 
+			go to gateway.ipfs.io/ipfs/(the hash)</p>
         </div>
         }
         
         let error;
         if(this.state.showError) {
-          error = <p>You may have entered either an invalid task id. Try again!</p>;
+          error = <p>You may have entered either an invalid task id. 
+		  		Try again!</p>;
         }
     
         return (

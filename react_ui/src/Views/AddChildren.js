@@ -18,6 +18,7 @@ class AddChildren extends Component{
         const { addChildren } = this.props.contractInstance;
         
         let _addr = document.querySelector('input[name=address]').value;
+		//cehck for valid address.
         if(!web3.utils.isAddress(_addr)) {
             alert("the address entered is invalid. Please try again!");
         } else {
@@ -40,15 +41,17 @@ class AddChildren extends Component{
 
         let msg;
         if(this.state.added) {
-            msg = <p> added a child address! Trasaction hash: {this.state.transactionHash}. You can also add other children!</p>;
+            msg = <p> added the address! Trasaction hash: {this.state.transactionHash}. 
+			You can also add other people/accounts!</p>;
         } 
 		return (
           <div id="addChildren" className="AddChildren">
             <hr />
-            <h2> Add your children, who may do tasks for you!</h2>
+            <h2> Add the accounts, who may do tasks for you!</h2>
             <form  onSubmit = { this.handleSubmit }>
-              Enter your child's ethereum wallet address (without any single quotes) : 
-              <input type="text" placeholder="child's ethereum wallet address" name="address"/>
+              Enter their ethereum wallet address (without any single quotes) : 
+              <input type="text" placeholder="child's ethereum wallet address" 
+		        name="address"/>
               <input type="submit" />
             </form>
             <br />

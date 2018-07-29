@@ -34,7 +34,8 @@ class AddTask extends Component{
         const buffer = await Buffer.from(reader.result);       
         this.setState({imgBuffer : buffer});
     }
-    //add a json obj called "doc" to ipfs and add its hash to ethereum.Also get its taskId
+    //add a json obj called "doc" to ipfs and add its hash to ethereum.
+	//Also get its taskId
     async addJSONToIpfs(doc) {
         const buf = await Buffer.from(JSON.stringify(doc));
        
@@ -45,18 +46,20 @@ class AddTask extends Component{
             //add the ipfsHash to ethereum!
             const {addTask} = this.props.contractInstance;
             addTask(_ipfsHash, (err, transHash) => {
-                this.setState({
-                    transactionHash: transHash,
-                    ipfsHash: _ipfsHash //would it change on simultaneous add???
-                });
-            });
+				if(!err) {
+					this.setState({
+						transactionHash: transHash,
+						ipfsHash: _ipfsHash 
+					});
 
-            //get your task id
-            const {getLatestTaskId} = this.props.contractInstance;
-            getLatestTaskId((err, id) => {
-                id = id.toNumber()+1;
-                this.setState({taskId: id});  //+1 problem
-            });           
+					//get your task id
+					const {getLatestTaskId} = this.props.contractInstance;
+					getLatestTaskId((err, id) => {
+						id = id.toNumber();
+						this.setState({taskId: id});
+					}); 
+				}
+            }); //addTask()
         })
     }
     //create the correct json object to add to ipfs.
@@ -82,7 +85,7 @@ class AddTask extends Component{
         });
 
         //add image to ipfs if imgBuffer is not an empty string:
-        if (this.state.imgBuffer!='') {
+        if (this.state.imgBuffer!=='') {
             await ipfs.add(this.state.imgBuffer, (err,files) => {
                 console.log(err,files[0]);
                 _imgIpfsHash = files[0].hash;

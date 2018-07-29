@@ -1,7 +1,9 @@
 pragma solidity ^0.4.15;
+import './SafeMath.sol';
 
 /**@title TaskHelper methods, getters to support TaskManager.sol*/
 contract TaskHelper {
+
 	//state variables.
     uint public task_id;
 	

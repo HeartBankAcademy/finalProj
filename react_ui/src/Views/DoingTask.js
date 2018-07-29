@@ -15,8 +15,8 @@ class DoingTask extends Component{
     async handleSubmit(e) {
         e.preventDefault();
         const {doingATask} = this.props.contractInstance
-        let _id = document.querySelector('input[name=task_id]').value;
-        doingATask(_id, (err,txHash) => {
+        let _id = document.querySelector('input[name=_id]').value;
+        await doingATask(_id, (err,txHash) => {
             if (err) {
                 alert("Either someone else is doing the task you entered OR you aren't assigned to this task. Ensure that you have entered the right task id");
             } else {
@@ -33,17 +33,19 @@ class DoingTask extends Component{
 
         let msg;
         if (this.state.successful){
-            msg = <p>Success! You have been logged as doing the task. Complete it now! Transaction hash: {this.state.transactionHash} </p>
+            msg = <p>Success! You have been logged as doing the task. 
+			Complete it now! Transaction hash: {this.state.transactionHash} </p>
         }
 
 		return (        
           <div id="logDoing" className="DoingTask">            
             <hr />
             <h2>Confirm Doing a Task </h2>
-            <p>If you choose to do one of the tasks assigned to you, please confirm that you are doing it. This is necessary for payment.</p>
+            <p>If you choose to do one of the tasks assigned to you, please confirm 
+			that you are doing it. This is necessary for payment.</p>
 
             <form  onSubmit = { this.handleSubmit }>
-              <input type="text" placeholder="enter task id" name="task_id"/>
+              <input type="text" placeholder="enter task id" name="_id"/>
               <input type="submit" />
             </form>
 

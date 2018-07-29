@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import web3 from '../utils/web3';
 import ipfs from '../utils/ipfs';
 
 class ShowTasks extends Component{
@@ -14,9 +13,10 @@ class ShowTasks extends Component{
 		this.createTable = this.createTable.bind(this);
     } 
 	
+	//create the tbale to be displayed for an array of task details.
 	async createTable() {
 		let arr = this.props.tasks;
-		console.log(arr.length); //ARR.LENGTH PROBLEM!!!!!!!!!
+		//arr = [[id,ipfsHash,address],...]
 		let tempArr = []		
 		//Outer loop - arr.length = no of tasks = no of rows!
 		for (let i=0; i<arr.length; i++) {
@@ -24,6 +24,7 @@ class ShowTasks extends Component{
 			details.push(<td key="{i+0.1}">{arr[i][0]}</td>); //id
 			details.push(<td key="{i+0.2}">{arr[i][2]}</td>); //parent/childDoing
 			let ipfsHash = arr[i][1];
+			//from ipfshash get relevant data using ipfs-api.
 			await ipfs.cat(ipfsHash, (err,buffer) => {				
 				let temp = JSON.parse(buffer.toString()); 
 				details.push(<td key="{i+0.3}">{temp.descriptionOfTask}</td>);
@@ -33,6 +34,7 @@ class ShowTasks extends Component{
 						
 				tempArr.push(details)
 				console.log(tempArr);
+				//once done, add details to the table array of state.
 				this.setState({ table: tempArr});
 				this.setState({ show: true});
             })//ipfs.cat()
@@ -41,6 +43,7 @@ class ShowTasks extends Component{
 	
 	componentWillMount() {
 		this.createTable();
+		//just call it once on display!
 	}
 	
 	render() {
@@ -60,6 +63,8 @@ class ShowTasks extends Component{
 				{this.state.show ? this.state.table.map((task,index) => {return <tr key={index}>{task}</tr> }) : <tr></tr> }
 			  </tbody>
 			</table>
+			<br />
+			<br />
           </div>
         );
     }

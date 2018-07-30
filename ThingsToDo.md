@@ -11,7 +11,19 @@ https://gist.github.com/Arachnid/4ca9da48d51e23e5cfe0f0e14dd6318f
 ### WATCH DESIGN PATTERNS and implement one  `(MODULR 9 B, 10 F,G)`
 
 #### ens?  `(module 10 B)` - https://medium.com/the-ethereum-name-service/adding-ens-into-your-dapp-72eb6deac26b
+FOR `RINKEBY` only!!! Not `ganache`.
+```
 https://github.com/ensdomains/ensjs#ens
+var ENS = require('ethereum-ens');
+var Web3 = require('web3');
+
+var provider = new Web3.providers.HttpProvider();
+var ens = new ENS(provider);
+```
+ORRRR
+`https://www.npmjs.com/package/ethjs-ens`
+
+
 
 ## README.md
 	What does your project do?

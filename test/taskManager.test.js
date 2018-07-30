@@ -10,6 +10,25 @@ contract('TaskManager', function(accounts) {
     var price = web3.toWei(1, "ether")   //in string.
     price = parseInt(price, 10)
 
+	//Testing only for passing conditions here:
+	//that everything works if all details are correct
+	it("should be able to add children previously not added", async() => {
+		const taskManager = await TaskManager.deployed()
+		
+		taskManager.addChildren(child, {from: parent});
+		let addr = taskManager.parentToChildren(parent,0)
+    })
+	
+	it("should not add already added children", async() => {
+
+    })
+	
+	
+	
+	
+	
+	
+	
     it("should add a task when provided with a hash", async() => {
         const taskManager = await TaskManager.deployed()
 
@@ -26,13 +45,9 @@ contract('TaskManager', function(accounts) {
         assert.equal(result[3], false, 'task is not completed and yet it shows otherwise.')
     })
 
-    it("should be able to add children previously not added", async() => {
+    
 
-    })
-
-    it("should not add already added children", async() => {
-
-    })
+    
 
     it("should allow the right child to do a task", async() => {
 

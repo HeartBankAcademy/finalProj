@@ -95,7 +95,7 @@ contract('TaskManager', function(accounts) {
 		}		
     })
 	
-	//completedATask TEST
+	//completedATask TESTS
 	
 	it("should allow the right child to log the task as completed", async() => {
 		const taskManager = await TaskManager.deployed();
@@ -112,6 +112,19 @@ contract('TaskManager', function(accounts) {
 		assert.equal(id, 1, 'Event params don\'t match');
 		assert.equal(childDOing,child1, 'Event params don\'t match');		
     })
+	
+	it("should not allow anyone else but the task doer to complete the task", async() => {
+		const taskManager = await TaskManager.deployed();
+		
+		try {
+			//child1 is doing the task. Calling completedATask from child2.
+		  await taskManager.completedATask(1, {from: child2});
+		  assert.fail('should have thrown before');
+		} catch(error) {			  
+		  assertJump(error);
+		}		
+    })
+	
 	
 	//verifyTask TESTS
 	
@@ -146,26 +159,3 @@ contract('TaskManager', function(accounts) {
 		}		
     })
 })
-
-/*pragma solidity ^0.4.13;
-
-import "truffle/Assert.sol";
-import "truffle/DeployedAddresses.sol";
-import "../contracts/TaskManager.sol";
-
-contract TestTaskManager {
-
-    TaskManager taskManager = TaskManager(DeployedAddresses.TaskManager());
-	TaskManager taskM = new TaskManager(); //like another account
-	
-	
-	
-    //AddTask - check right task id is created!
-    function testTaskId() public {
-        taskManager.addTask("Qm3xrP");
-        uint  id = taskManager.getLatestTaskId();
-        uint _id = 1;
-        Assert.isTrue(id==_id,"addTask creates the right task ids.");        
-    }
-}
-*/

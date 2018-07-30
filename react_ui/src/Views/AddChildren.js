@@ -15,9 +15,8 @@ class AddChildren extends Component{
 
     async handleSubmit(e) {
         e.preventDefault();
-        const { addChildren } = this.props.contractInstance;
-        
-        let _addr = document.querySelector('input[name=address]').value;
+        const { addChildren } = this.props.contractInstance;        
+        let _addr = document.querySelector('input[name=_address]').value;
 		//cehck for valid address.
         if(!web3.utils.isAddress(_addr)) {
             alert("the address entered is invalid. Please try again!");
@@ -51,7 +50,7 @@ class AddChildren extends Component{
             <form  onSubmit = { this.handleSubmit }>
               Enter their ethereum wallet address (without any single quotes) : 
               <input type="text" placeholder="child's ethereum wallet address" 
-		        name="address"/>
+		        name="_address"/>
               <input type="submit" />
             </form>
             <br />

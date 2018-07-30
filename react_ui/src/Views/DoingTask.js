@@ -16,8 +16,10 @@ class DoingTask extends Component{
         e.preventDefault();
         const {doingATask} = this.props.contractInstance
         let _id = document.querySelector('input[name=_id]').value;
-        await doingATask(_id, (err,txHash) => {
+		console.log(_id);
+        doingATask(_id, (err,txHash) => {
             if (err) {
+				console.log(err);
                 alert("Either someone else is doing the task you entered OR you aren't assigned to this task. Ensure that you have entered the right task id");
             } else {
                 this.setState({

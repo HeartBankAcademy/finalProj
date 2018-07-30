@@ -20,11 +20,3 @@ https://github.com/ensdomains/ensjs#ens
   
   design_pattern_desicions.md
   avoiding_common_attacks.md
-  
-## CODE
-ens
-beautify code (comments etc)
-### BUGS
-`VerifyTask` doesnt work with `YES`
-
-Cant do `Doing task/ COmpleting task` without VIEW TASK

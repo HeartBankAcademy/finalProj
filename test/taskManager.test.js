@@ -10,26 +10,43 @@ contract('TaskManager', function(accounts) {
     var price = web3.toWei(1, "ether")   //in string.
     price = parseInt(price, 10)
 
-	//Testing only for passing conditions here:
-	//that everything works if all details are correct
+	//Testing for passing conditions when everything is correct 
+	//AND also checking some require statements.
+	
+	//helper method to check for solidity throws!
+	function assertJump(error) {
+  		if(error.toString().indexOf("invalid JUMP") == -1) {
+			console.log("We were expecting a Solidity throw (aka an invalid JUMP)," + 
+						"we got one. Test succeeded.");
+		} else {
+			assert(false, error.toString());
+		}
+	}
+	//AddChildren TESTS
+	
 	it("should be able to add children previously not added", async() => {
 		const taskManager = await TaskManager.deployed()
-		
-		taskManager.addChildren(child, {from: parent});
-		let addr = taskManager.parentToChildren(parent,0)
+		await taskManager.addChildren(child1, {from: parent});
+		let addr = await taskManager.parentToChildren.call(parent,0);
+		assert.equal(addr, child1, 'the child added and the child recorded don\'t ' + 
+					 'match.');		
     })
 	
 	it("should not add already added children", async() => {
+		const taskManager = await TaskManager.deployed()
+		
+		try {
+		  await taskManager.addChildren(child1, {from: parent});
+		  assert.fail('should have thrown before');
+		} catch(error) {			  
+		  assertJump(error);
+		}
 
     })
 	
+	//AddTask TEST
 	
-	
-	
-	
-	
-	
-    it("should add a task when provided with a hash", async() => {
+	it("should add a task when provided with a hash", async() => {
         const taskManager = await TaskManager.deployed()
 
         const _hash = "Qm..."
@@ -39,32 +56,99 @@ contract('TaskManager', function(accounts) {
         assert.equal(_id,1,'it doesn\'t create the right task id')
         let result = await taskManager.getCorrespondingTask(1)
 
-        assert.equal(result[0], _hash, 'the hash of the last added item does not match the expected value')
-       assert.equal(result[1], parent, 'the person who added task and parent address don\'t match')
+        assert.equal(result[0], _hash, 'the hash of the last added item does not'+
+					 ' match the expected value')
+        assert.equal(result[1], parent, 'the person who added task and parent '+
+					 'address don\'t match')
         assert.equal(result[2], emptyAddress, 'no one should be the doing the task')
-        assert.equal(result[3], false, 'task is not completed and yet it shows otherwise.')
+        assert.equal(result[3], false, 'task is not completed and yet it shows '+
+					 'otherwise.')
     })
-
-    
-
-    
-
-    it("should allow the right child to do a task", async() => {
-
+	
+	//DoingTask TESTS
+	
+	it("should allow the right child to do a task", async() => {
+		const taskManager = await TaskManager.deployed();
+		
+		let tx = await taskManager.doingATask(1, {from: child1});
+		//watch for event
+		let eventName = tx.logs[0].event;
+		let childDOing = tx.logs[0].args.childDoing;
+		let id = tx.logs[0].args.id;
+		let result = await taskManager.getCorrespondingTask(1)
+		
+		assert.equal('TaskDoing', eventName, 'Event name dont match');
+		assert.equal(result[2],child1, 'Didnt log the child as doing the event correctly!');
+		assert.equal(id, 1, 'Event params don\'t match');
+		assert.equal(childDOing,child1, 'Event params don\'t match');		
     })
-
-    //shouldnt allow wrong one to do task
-    //shouldnt allow other child to do a task already done by someone else
-    //allow same person to complete rask
-    //not allow someone els eto complete task
-
-    //alow only parent to do task
-    //task must be completed to verify
-    //another parent can't do the task!
+	
+	it("should not allow someone to do the task, if it is being done by someone else", 
+	   async() => {
+		const taskManager = await TaskManager.deployed();
+		
+		try {
+		  await taskManager.doingATask(1, {from: child2});
+		  assert.fail('should have thrown before');
+		} catch(error) {			  
+		  assertJump(error);
+		}		
+    })
+	
+	//completedATask TEST
+	
+	it("should allow the right child to log the task as completed", async() => {
+		const taskManager = await TaskManager.deployed();
+		
+		let tx = await taskManager.completedATask(1, {from: child1});
+		//watch for event
+		let eventName = tx.logs[0].event;
+		let childDOing = tx.logs[0].args.childDoing;
+		let id = tx.logs[0].args.id;
+		let result = await taskManager.getCorrespondingTask(1);
+		
+		assert.equal('TaskCompleted', eventName, 'Event name dont match');
+		assert.equal(result[3],true, 'Didnt log the task as completed');
+		assert.equal(id, 1, 'Event params don\'t match');
+		assert.equal(childDOing,child1, 'Event params don\'t match');		
+    })
+	
+	//verifyTask TESTS
+	
+	it("should allow the right parent to verify the task and send payment", async() => {
+		const taskManager = await TaskManager.deployed();
+		
+		await taskManager.verifyTask(1, {from: parent, value: price});
+		let result = await taskManager.getCorrespondingTask(1);
+		
+		assert.equal(result[4],true, 'Didnt log the task as verified');	
+    })
+	
+	it("should not allow someone else to verify the task", async() => {
+		const taskManager = await TaskManager.deployed();
+		
+		try {
+		  await taskManager.verifyTask(1, {from: child2, value: price});
+		  assert.fail('should have thrown before');
+		} catch(error) {			  
+		  assertJump(error);
+		}		
+    })
+	
+	it("should not allow parent to verify a verified task", async() => {
+		const taskManager = await TaskManager.deployed();
+		
+		try {
+		  await taskManager.verifyTask(1, {from: parent, value: price});
+		  assert.fail('should have thrown before');
+		} catch(error) {			  
+		  assertJump(error);
+		}		
+    })
 })
 
 /*pragma solidity ^0.4.13;
-/*
+
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
 import "../contracts/TaskManager.sol";
@@ -72,7 +156,10 @@ import "../contracts/TaskManager.sol";
 contract TestTaskManager {
 
     TaskManager taskManager = TaskManager(DeployedAddresses.TaskManager());
-    
+	TaskManager taskM = new TaskManager(); //like another account
+	
+	
+	
     //AddTask - check right task id is created!
     function testTaskId() public {
         taskManager.addTask("Qm3xrP");
@@ -80,4 +167,5 @@ contract TestTaskManager {
         uint _id = 1;
         Assert.isTrue(id==_id,"addTask creates the right task ids.");        
     }
-}*/
+}
+*/

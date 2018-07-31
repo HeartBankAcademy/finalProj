@@ -1,0 +1,19 @@
+There have been 4 contracts deployed on Rinkeby.
+
+Following are the names and their addresses:
+
+SafeMath.sol
+0x88bc8a25344a8c4c886d62c775d1fcfcb2475df0
+Transaction Hash: 0xd1ed64017926a1464f1680aeadd75248177876c5c1badfd94cc0fbe2dd37fb2f
+
+Pausable.sol
+0x05c3ff122349348e99ba601e797c62018a008439
+Transaction Hash: 0x7a82b2e123d8c7ff5ee20eba1d8d992d296b4380749b54b82d21a29459d36920
+
+TaskHelper.sol
+0x850c1f770a959ffa2810f9f1b9676663e5e06947
+Transaction Hash: 0x613ba161eaeb4024522c128b95123fa90f491b01ec49ee369cb0404388ddfe94
+
+TaskManager.sol
+0x9b77676b203148f824e4e939b9e8c9c91450d494
+Transaction Hash: 0x25452ac0f2e38f2873da0075e405347ed821debf2b4d8afee8c2a9498ddd82f1

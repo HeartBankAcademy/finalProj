@@ -1,33 +1,47 @@
 # Task Management - Consensys Academy Final Project
 
 ## A Casual Introduction
-I am back at my home for my university summer break. Before my mother goes to work, she gives me a few tasks to do. And obviously she comes back in the evening to find out that I forgot about all of them.  And since I had to do a final project, why not make it this. **A web based task assigning and management system that families can use to pay allowances to their children** 
+I am back at my home for my university summer break. Before my mother goes to work, she gives me a few tasks to do. And obviously she comes back in the evening to find out that I forgot some of them.  And since I had to do a final project, why not make it this. **A web based task assigning and management system that families can use to pay allowances to their children** 
 
 But then again, why limit it just to parents and children? This system can be used by ANYONE to assign tasks to ANYONE!
 
-The incentive of cryptocurrency is added into the system. The intial idea was to create an ERC20 Token for this. However, an ERC20 Token limits what you can do with your earned cash. Studying computer science, I was always left out of the crucial financial world, however the ability of managing money provides such an understanding. the child receiving ether using this syetm, can think if it is better to HODL or buy another token of it, or switch to another cryptocurrency too.
+The incentive of cryptocurrency is added into the system. The intial idea was to create an ERC20 Token for this. However, an ERC20 Token limits what you can do with your earned reward. Today's computer era is always all about giving people the most number of options. Allowing young children to be able to do anything they want with ether i.e HODL/invest in other tokens etc. seemed like an interesting idea to me as this could also allow them to understand finance. More importantly, this could be an easy way for many folks to enter into the crypto-currency world.
 
-There is also the possibility of taking a look at all the tasks associated to you by entering your ethereum address.
+There is also the possibility of taking a look at all the tasks associated to you by entering your ethereum address. This way, you can always keep track of what tasks you need to do, or what tasks you need to verify. Additionally this also allows you to keep track of all the tasks that you assigned.
+
+And ofcourse, all task details have been stored on IPFS, because storing data onto a blockchain isn't a good practise. The IPFS hashes corresponding to the tasks are stored onto the ethereum blockchain.
+
+Having this sytem on the blockchain means that no one can argue that they hadn't been told of a task, and neither can a task-creator get away with not paying a task-doer. That is the removal of so much hassle for freelancers!
+
 ## Deeper Dive
-There are 6 steps in the process. I have taken care to store as less items in the contract as possible, doing as much as off-chain computing as possible and storing data on IPFS.
+I have taken care to store as less items in the contract as possible, doing as much as off-chain computing as possible by using IPFS.
+
+#### HOW IT WORKS/STEPS ON WORKING ON THE TASK SYSTEM:
 
 1. Add the person/people who you want to assign the task to
+These addresses are stored in the mapping. This is crucial to only limit certain people to be able to do your tasks.
+
 2. Add the task (with all the relevant details such as the task description, the reward you are willing to offer, the deadline and even an image if you want to upload it.)
-All these details and the image too will be stored in IPFS as a JSON data structure (with the image, first that is stored in IPFS, and its hash is stored with the other details in the JSON structure). On adding the task, a table pops up with the task id, the ipfs hash where the JSON structure is stored and the ethereum transaction hash.
 
-Off the chain, you tell others the task ids of the tasks they must do.
-3. Anyone may look up the task details by entering the relevant task id. 
-A mapping in my solidity contract stores the task ids with the relevant task struct. The task struct stores the ipfs Hash, who has created the task, who is doing the task and the status of the task.
-The ipfs hash is fetched from the task id, the user enters, and ipfs-api is used to fetch the JSON data structure stored at this hash, and the data is presented in the form of a table.
+All these details are stored in IPFS in a JSON structure as reiterated earlier. Firstly the image is stored onto the IPFS and its hash is added onto the JSON of the task. Finally this JSON is stored onto the IPFS. The hash thus generated is added into the task struct for this task id. (There exists a mapping between the task ids, and their structs.) The struct also stores the address of the creator of the task. 
 
-4. If there are multiple people who can do the task, these people talk amongst them (off-chain negotiation) to decide who will do the task. This person then enters the task id for the task that they will do.
-Internally, the address of this user is stored as the person who is doing the task (i.e. the Task struct is modified)
+3. Off the chain, you tell others the task ids of the tasks they must do.
 
-5. Once the task has been completed, it must be logged as so by the same account who was doing the task
-Once again, the user enters the task Id, which is used to find the corresponding Task struct that after checking, it modifies the status of the task as completed.
+4. Anyone may look up the task details by entering the relevant task id. 
 
-6. Finally the task creator "verifies the task" off-chain and then if satisfied, logs the task as verified and does the payment. 
-The ether is sent to the person who was doing the task. As an added functionality, the task creator can decide to pay the initial amount (which is fetched using ipfs-api, since the JSON structure stores the reward), or the person can write up a new amount.
+The mapping between task ids and its struct is used to fetch the ipfs hash for the task. Using IPFS-API, the JSON structure is fetched from IPFS, and it is data is presented in a table-format.
+
+5. If there are multiple people who can do the task, these people talk amongst them (off-chain negotiation) to decide who will do the task. This person then enters the task id for the task that they will do.
+
+Internally, the address of this user is stored as the person who is doing the task (in the Task struct for this task id)
+
+6. After the task has been completed, the person who was doing the task must now mark the task as completed.
+
+Once again, the user enters the task Id, which is used to find the corresponding Task struct, and after the modifiers complete the checking (i.e. the person doing the task is same as the person who is calling this function), the state of the struct is modified to reflect the change.
+
+7. Finally the task creator "verifies the task" off-chain and then if satisfied, logs the task as verified and does the payment. 
+
+The ether is sent to the person who was doing the task. As an added functionality, the task creator can decide to pay the initial amount (which is fetched using ipfs-api, since the JSON structure stores the reward), or the person can pay a different amount, if the task wasn't complete to his/her liking.
 
 Finally, there is an additional functionality - the **DASHBOARD**. The user enters his/her ethereum address, and all the tasks associated with him/her appear in 5 different sections namely:
 
@@ -37,9 +51,12 @@ Finally, there is an additional functionality - the **DASHBOARD**. The user ente
 - Tasks you are currently doing
 - Tasks you have completed, but not yet verified by the task creator.
 
-Since ethereum is a public blockchain, it is necessary for the task creator to tell a potential task do-er the task id. 
+This is displayed by listening to various events that are fired as users interact with the system. The events help to filter and categorize a task into one of the 5 tables. Using IPFS-API, relevant details are once again fetched.
 
-The idea to simply display any tasks in your dashboard that have been created by someone who at some point had assigned you a task, doesn't work because even though at some point he/she may have given you a task, perhaps this task is not for you! 
+**NOTE:** 
+A mapping `parentToChildren` stores an array of addresses that may do tasks for a "parent" (or task-creator). I had given much thought into the idea of showing up any tasks onto the dashboard of a "child", that has been created by a "parent" (i.e. the person who once added the child into their mapping). This way a task-creator wouldn't ever have to tell anyone the task Id, as long as the person has been added by him into the mapping. 
+
+HOWEVER, this is not practical. It is a high possibility that some tasks created aren't meant for a certain individual. Thus I have employed the most simple workaround - a task creator will tell task ids to all those who he/she thinks can do the task. 
 
 ## BUILD INSTRUCTIONS
 

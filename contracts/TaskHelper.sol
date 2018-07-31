@@ -1,8 +1,12 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.24;
 import './SafeMath.sol';
+import './Pausable.sol';
 
-/**@title TaskHelper methods, getters to support TaskManager.sol*/
-contract TaskHelper {
+/**
+ * @title TaskHelper
+ * @dev This contract has all the state variables and view functions. Done to separate function and data logic.
+ */
+contract TaskHelper is Pausable {
 
 	//state variables.
     uint public task_id;
@@ -46,7 +50,9 @@ contract TaskHelper {
         return doesChildBelongsToParent(parent, child);
     }
     
-	//@notice Gets the latest task id.
+	/**
+	  * @notice Gets the latest task id.
+	  */
     function getLatestTaskId() public view returns (uint) {
         return task_id;
     }

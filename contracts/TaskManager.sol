@@ -1,8 +1,12 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.24;
 import './TaskHelper.sol';
 
 
-/**@title Handling theS tasks dashboard*/
+/**
+ * @title TaskManager
+ * @dev This contract has all the critical methods that work with handling the
+ * tasks, modifying the struct variable, using different methods that the user can do.
+ */
 contract TaskManager is TaskHelper {
 
 	using SafeMath for uint;
@@ -27,7 +31,7 @@ contract TaskManager is TaskHelper {
 		corresponding id
       * @param _ipfsHash the ipfsHash where Task data is stored.
 	  */
-    function addTask(string _ipfsHash) public {
+    function addTask(string _ipfsHash) public whenNotPaused {
         task_id = task_id.add(1); //use safemath.     
         Task memory task = idToTask[task_id];
         task.ipfsHash = _ipfsHash;
@@ -41,7 +45,7 @@ contract TaskManager is TaskHelper {
 		not already added.
       * @param child address of the child
 	  */
-    function addChildren(address child) {
+    function addChildren(address child) public whenNotPaused {
         //don't allow to add same child again!
         require(!doesChildBelongsToParent(msg.sender, child)); 
         parentToChildren[msg.sender].push(child);
@@ -52,7 +56,7 @@ contract TaskManager is TaskHelper {
 		stored if no other child is doing the task. 
       * @param _taskId the task id
 	  */
-    function doingATask(uint _taskId) correctChild(_taskId) {
+    function doingATask(uint _taskId) public whenNotPaused correctChild(_taskId) {
         require(idToTask[_taskId].childDoing==0x0000000000000000000000000000000000000000);
         idToTask[_taskId].childDoing = msg.sender;
 		emit TaskDoing(_taskId, msg.sender);
@@ -61,7 +65,7 @@ contract TaskManager is TaskHelper {
 	/** @dev set task as completed, provided msg.sender was doing the task
       * @param id the task id
 	  */    
-    function completedATask(uint id) correctChild(id) {
+    function completedATask(uint id) public whenNotPaused correctChild(id) {
         require(idToTask[id].childDoing == msg.sender);
         idToTask[id].completed = true;
 		emit TaskCompleted(id, msg.sender);
@@ -72,7 +76,7 @@ contract TaskManager is TaskHelper {
 		and pays an amount.
       * @param id the task id
 	  */
-    function verifyTask(uint id) payable onlyParent(id) {        
+    function verifyTask(uint id) public payable whenNotPaused onlyParent(id) {        
         require(idToTask[id].completed);
 		require(!idToTask[id].verified);
 		idToTask[id].verified = true;

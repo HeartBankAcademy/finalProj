@@ -158,4 +158,16 @@ contract('TaskManager', function(accounts) {
 		  assertJump(error);
 		}		
     })
+	//CHECK FOR PAUSABILITY:
+	it("should not do any transactions if contract is PAUSED.", async() => {
+		const taskManager = await TaskManager.deployed();
+		await taskManager.pause(); //from defaultAccount -> the owner
+
+		try {
+			await taskManager.addTask("Qmm..", {from: parent, value: price});
+			assert.fail('should have thrown before');
+		} catch(error) {			  
+			assertJump(error);
+		}	
+	})
 })

@@ -32,6 +32,7 @@ class GetTasks extends Component{
 	async handleClick() {
 		this.resetState();
 		let _addr = await web3.eth.getAccounts().then(addr => addr[0] );
+		//get address from metamask account!
 		console.log(_addr);
 		let taskDetails = [];
 		//to avoid async behavior: create 5 temp arrays (one for each array of this.state).
@@ -47,96 +48,90 @@ class GetTasks extends Component{
 		const {TaskCreated} = this.props.contractInstance;
 		const {TaskDoing} = this.props.contractInstance;
 		const {TaskCompleted} = this.props.contractInstance;
-		try {
-			if(!web3.utils.isAddress(_addr))
-				alert("the address entered is invalid. Please try again!");
-			else {	
-				//event: TASKCREATED
-				TaskCreated({parent: _addr}, { fromBlock: 0, toBlock: 'latest' })
-				.get((error, eventResult) => {
-					console.log(JSON.stringify(eventResult));
-					//if no events,
-					if(eventResult.length===0) { this.setState({ okayToSetShow1: true }); } 
-					for(let i=0; i<eventResult.length; i++) {
-						//for each event fetch details, and decide which table to show!
-						let _id = eventResult[i].args.id.toNumber();						
-						getCorrespondingTask(_id, (err,res) => {
-							taskDetails = [_id, res[0], res[2], res[3], res[4]];
-							if(!taskDetails[3]) { 
-								//if not completed -> add to tasksDelegated_uncompleted
-								temp1.push(taskDetails.slice(0,3));
-								this.setState({ tasksDelegated_uncompleted: temp1 });
-								tempShow[0] = true;
-							} else if(!taskDetails[4]) {
-								//if not verified -> add to tasksDelegated_unverified
-								temp2.push(taskDetails.slice(0,3));
-								this.setState({ tasksDelegated_unverified: temp2 });
-								tempShow[1] = true;
-							} else if (taskDetails[4]) {
-								//verfied -> add to tasksDelegated_verified	
-								temp3.push(taskDetails.slice(0,3));
-								this.setState({ tasksDelegated_verified: temp3 });
-								tempShow[2] = true;								
-							}
-							if(i===eventResult.length-1) { 
-								//only after all events been read, allow for tables to be seen!
-								this.setState({ okayToSetShow1: true }); 
-								this.setState({ show: tempShow }); 
-							}
-						}) //getCorrespondingTask()
-					} //for loop.				
-				}); //TaskCreated()
+		
+		//event: TASKCREATED
+		TaskCreated({parent: _addr}, { fromBlock: 0, toBlock: 'latest' })
+		.get((error, eventResult) => {
+			console.log(JSON.stringify(eventResult));
+			//if no events,
+			if(eventResult.length===0) { this.setState({ okayToSetShow1: true }); } 
+			for(let i=0; i<eventResult.length; i++) {
+				//for each event fetch details, and decide which table to show!
+				let _id = eventResult[i].args.id.toNumber();						
+				getCorrespondingTask(_id, (err,res) => {
+					taskDetails = [_id, res[0], res[2], res[3], res[4]];
+					if(!taskDetails[3]) { 
+						//if not completed -> add to tasksDelegated_uncompleted
+						temp1.push(taskDetails.slice(0,3));
+						this.setState({ tasksDelegated_uncompleted: temp1 });
+						tempShow[0] = true;
+					} else if(!taskDetails[4]) {
+						//if not verified -> add to tasksDelegated_unverified
+						temp2.push(taskDetails.slice(0,3));
+						this.setState({ tasksDelegated_unverified: temp2 });
+						tempShow[1] = true;
+					} else if (taskDetails[4]) {
+						//verfied -> add to tasksDelegated_verified	
+						temp3.push(taskDetails.slice(0,3));
+						this.setState({ tasksDelegated_verified: temp3 });
+						tempShow[2] = true;								
+					}
+					if(i===eventResult.length-1) { 
+						//only after all events been read, allow for tables to be seen!
+						this.setState({ okayToSetShow1: true }); 
+						this.setState({ show: tempShow }); 
+					}
+				}) //getCorrespondingTask()
+			} //for loop.				
+		}); //TaskCreated()
 
-				//event TaskDoing
-				
-				TaskDoing({childDoing: _addr}, { fromBlock: 0, toBlock: 'latest' })
-				.get((error, eventResult) => {
-					
-					console.log(JSON.stringify(eventResult));
-					if(eventResult.length===0) {this.setState({ okayToSetShow2: true }); }
-					for(let i=0; i<eventResult.length; i++) {
-						let id = eventResult[i].args.id.toNumber();
-						getCorrespondingTask(id, (err,res) => {
-							taskDetails = [id, res[0], res[1], res[3]];							
-							if(!taskDetails[3]) {//if not completed -> add to tasksDoing
-								temp4.push(taskDetails.slice(0,3));
-								this.setState({ tasksDoing: temp4 });	
-								tempShow[3] = true;	
-							}
-							if(i===eventResult.length-1) {
-								this.setState({ okayToSetShow2: true }); 
-								this.setState({ show: tempShow }); 
-							}
-						}) //getCorrespondingTask()
-					} //for loop.
-				}); //TaskDoing()
+		//event TaskDoing
 
-				//event TASKCOMPLETED
-				
-				TaskCompleted({childDoing: _addr}, { fromBlock: 0, toBlock: 'latest' })
-				.get((error, eventResult) => {
-					console.log(JSON.stringify(eventResult));
-					if(eventResult.length===0) {this.setState({ okayToSetShow3: true }); }
-					for(let i=0; i<eventResult.length; i++) {
-						let id = eventResult[i].args.id.toNumber();
-						getCorrespondingTask(id, (err,res) => {
-							taskDetails = [id, res[0], res[1], res[4]];
+		TaskDoing({childDoing: _addr}, { fromBlock: 0, toBlock: 'latest' })
+		.get((error, eventResult) => {
 
-							if(!taskDetails[3]) {//if not verfified -> add to tasksCompleted
-								temp5.push(taskDetails.slice(0,3));
-								this.setState({ tasksCompleted: temp5 });
-								tempShow[4] = true;	
-							}
-							if(i===eventResult.length-1) {
-								this.setState({ okayToSetShow3: true }); 
-								this.setState({ show: tempShow }); 
-							}
-						}) //getCorrespondingTask()
-					} //for loop.
-				}); //TaskCompleted()
-			} //else
-		} //try
-		catch(err) { console.log(err);}
+			console.log(JSON.stringify(eventResult));
+			if(eventResult.length===0) {this.setState({ okayToSetShow2: true }); }
+			for(let i=0; i<eventResult.length; i++) {
+				let id = eventResult[i].args.id.toNumber();
+				getCorrespondingTask(id, (err,res) => {
+					taskDetails = [id, res[0], res[1], res[3]];							
+					if(!taskDetails[3]) {//if not completed -> add to tasksDoing
+						temp4.push(taskDetails.slice(0,3));
+						this.setState({ tasksDoing: temp4 });	
+						tempShow[3] = true;	
+					}
+					if(i===eventResult.length-1) {
+						this.setState({ okayToSetShow2: true }); 
+						this.setState({ show: tempShow }); 
+					}
+				}) //getCorrespondingTask()
+			} //for loop.
+		}); //TaskDoing()
+
+		//event TASKCOMPLETED
+
+		TaskCompleted({childDoing: _addr}, { fromBlock: 0, toBlock: 'latest' })
+		.get((error, eventResult) => {
+			console.log(JSON.stringify(eventResult));
+			if(eventResult.length===0) {this.setState({ okayToSetShow3: true }); }
+			for(let i=0; i<eventResult.length; i++) {
+				let id = eventResult[i].args.id.toNumber();
+				getCorrespondingTask(id, (err,res) => {
+					taskDetails = [id, res[0], res[1], res[4]];
+
+					if(!taskDetails[3]) {//if not verfified -> add to tasksCompleted
+						temp5.push(taskDetails.slice(0,3));
+						this.setState({ tasksCompleted: temp5 });
+						tempShow[4] = true;	
+					}
+					if(i===eventResult.length-1) {
+						this.setState({ okayToSetShow3: true }); 
+						this.setState({ show: tempShow }); 
+					}
+				}) //getCorrespondingTask()
+			} //for loop.
+		}); //TaskCompleted()
 	}
 	
 	resetState() {
@@ -150,7 +145,7 @@ class GetTasks extends Component{
 			okayToSetShow1: false,
 			okayToSetShow2: false,
 			okayToSetShow3: false
-        })
+       		})
 	}
 	
 	

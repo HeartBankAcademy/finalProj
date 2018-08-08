@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ipfs from '../utils/ipfs';
+import web3 from '../utils/web3';
 
 class AddTask extends Component{
     constructor(props) {
@@ -50,16 +51,16 @@ class AddTask extends Component{
 					this.setState({
 						transactionHash: transHash,
 						ipfsHash: _ipfsHash 
-					});
-
-					//get your task id
-					const {getLatestTaskId} = this.props.contractInstance;
-					getLatestTaskId((err, id) => {
-						id = id.toNumber();
-						this.setState({taskId: id});
-					}); 
+					});					 
 				}
             }); //addTask()
+	    
+	    //get your task id
+		const {getLatestTaskId} = this.props.contractInstance;
+		getLatestTaskId((err, id) => {
+			id = id.toNumber()+1;  //+1 problem for rinkeby and ganache
+			this.setState({taskId: id});
+		});
         })
     }
     //create the correct json object to add to ipfs.

@@ -26,7 +26,7 @@ class App extends Component {
         
         <ul>
           <li><a href="#instructions">Instructions/ How to use</a></li>
-		  <li><a href="#showTasks">See your tasks</a></li>
+		  <li><a href="#showTasks">Task Dashboard</a></li>
           <li><a href="#addChildren">Add Task Do-ers</a></li>
           <li><a href="#addTask">Add Task</a></li>
           <li><a href="#viewTask">View a Task</a></li>
@@ -56,7 +56,7 @@ class App extends Component {
 
 	    <h4> ALSO...</h4>
 	    <p> You can view all tasks that you have created or doing in the <strong>
-	    See your Tasks </strong> section. The tasks will be divided in 5 tables, based 
+	    DASHBOARD </strong> section. The tasks will be divided in 5 tables, based 
 	    on if the task was completed, verified and other parameters. </p>
 	  
 	    <GetTasks id="showTasks" contractInstance={contractInstance}/>

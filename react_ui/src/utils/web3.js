@@ -1,4 +1,4 @@
-import Web3 from 'web3'
+import Web3 from 'web3' // '../../node_modules/web3'
 
 var web3 = window.web3
 

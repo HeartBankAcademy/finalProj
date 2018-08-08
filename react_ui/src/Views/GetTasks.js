@@ -25,14 +25,14 @@ class GetTasks extends Component{
 			//(meaning when all 3 events have been fully read!
         }
 		
-		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleClick = this.handleClick.bind(this);
 		this.resetState = this.resetState.bind(this);
     } 
 	
-	handleSubmit(e) {
-		e.preventDefault();
+	async handleClick() {
 		this.resetState();
-		let _addr = document.querySelector('input[name=addr]').value;
+		let _addr = await web3.eth.getAccounts().then(addr => addr[0] );
+		console.log(_addr);
 		let taskDetails = [];
 		//to avoid async behavior: create 5 temp arrays (one for each array of this.state).
 		let temp1 = [];
@@ -160,7 +160,7 @@ class GetTasks extends Component{
 				&& this.state.okayToSetShow3) {
 			msg = 
 			  <div>
-				<h4> Tasks Delegated by you </h4>		
+				<h3> Tasks Delegated by you </h3>		
 				Tasks assigned, but not yet done	
 				{this.state.show[0] ? <ShowTasks tasks={this.state.tasksDelegated_uncompleted} 
 					type={1}/> : <p>No such Tasks here.</p>}
@@ -170,7 +170,7 @@ class GetTasks extends Component{
 				Tasks completed and verified 
 				{this.state.show[2] ? <ShowTasks tasks={this.state.tasksDelegated_verified} 
 					type={1}/> : <p>No such Tasks here.</p>}
-				<h4> Tasks given to you </h4>
+				<h3> Tasks given to you </h3>
 				Tasks you are currently doing
 				{this.state.show[3] ? <ShowTasks tasks={this.state.tasksDoing} type={2}/> 
 									: <p>No such Tasks here.</p>}
@@ -183,13 +183,9 @@ class GetTasks extends Component{
 		return (        
           <div id="showTasks" className="ShowTasks">            
             <hr />
-            <h2>See your Tasks </h2>
-			<form  onSubmit = { this.handleSubmit }>
-			Enter your ethereum address (w-out single quotes): 
-              <input type="text" placeholder="your ethereum address" name="addr"/>
-              <input type="submit" />
-            </form>			
-			{msg}
+            <h2>Dashboard</h2>
+	    <button onClick = {this.handleClick} > See the Tasks </button>
+	    {msg}
           </div>
         );
     }

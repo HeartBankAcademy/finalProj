@@ -39,7 +39,7 @@ All these details are stored in IPFS in a JSON structure. And a task id for his 
 
 The ether is sent to the person who was doing the task. As an added functionality, the task creator can decide to pay the initial amount (which is fetched using ipfs-api, since the JSON structure stores the reward), or the person can pay a different amount, if the task wasn't complete to his/her liking.
 
-Now, about the **DASHBOARD** - The user hits the "see the tasks" button and all the tasks associated with him/her appear in 5 different sections namely:
+Now, about the **DASHBOARD** - The user hits the "see the tasks" button. The code retrieves the current metamask account that the user is using and all the tasks associated with him/her appear in 5 different sections namely:
 
 - Tasks you created, but aren't completed
 - Tasks you created, that are completed, but not verified by you

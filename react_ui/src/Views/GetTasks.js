@@ -156,20 +156,20 @@ class GetTasks extends Component{
 			msg = 
 			  <div>
 				<h3> Tasks Delegated by you </h3>		
-				Tasks assigned, but not yet done	
+				<i><u>Tasks assigned, but not yet done</u></i>	
 				{this.state.show[0] ? <ShowTasks tasks={this.state.tasksDelegated_uncompleted} 
 					type={1}/> : <p>No such Tasks here.</p>}
-				Tasks assigned, done but not yet verified
+				<i><u>Tasks assigned, done but not yet verified</u></i>
 				{this.state.show[1] ? <ShowTasks tasks={this.state.tasksDelegated_unverified} 
 					type={1}/> : <p>No such Tasks here.</p>}
-				Tasks completed and verified 
+				<i><u>Tasks completed and verified</u></i> 
 				{this.state.show[2] ? <ShowTasks tasks={this.state.tasksDelegated_verified} 
 					type={1}/> : <p>No such Tasks here.</p>}
 				<h3> Tasks given to you </h3>
-				Tasks you are currently doing
+				<i><u>Tasks you are currently doing</u></i>
 				{this.state.show[3] ? <ShowTasks tasks={this.state.tasksDoing} type={2}/> 
 									: <p>No such Tasks here.</p>}
-				Tasks you have completed, but not yet verified
+				<i><u>Tasks you have completed, but not yet verified</u></i>
 				{this.state.show[4] ? <ShowTasks tasks={this.state.tasksCompleted} type={2}/> 
 									: <p>No such Tasks here.</p>}
 			  </div>

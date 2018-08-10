@@ -12,7 +12,7 @@ The incentive of cryptocurrency is added into the system. The intial idea was to
 All task details have been stored on IPFS, because storing data onto a blockchain isn't a good practise. The IPFS hashes corresponding to the tasks are stored onto the ethereum blockchain.
 
 Having this sytem on the blockchain means that no one can argue that they hadn't been told of a task, and neither can a task-creator get away with not paying a task-doer. That is the removal of so much hassle for freelancers!
-
+![alt text](https://github.com/rahul-ki/finalProj/blob/master/pictures/instructions.JPG)
 ## Deeper Dive/ How to use the dApp
 There are various sections in my dApp namely: **ADD A TASK, VIEW A TASK, DO A TASK, MARK TASK AS COMPLETED, VERIFY A TASK and the DASHBOARD - Seeing your tasks.**
 
@@ -28,13 +28,13 @@ All these details are stored in IPFS in a JSON structure. And a task id for his 
 4. Anyone may look up the task details by entering the relevant task id. 
 
 (The ipfs api uses the hash corresponding to this task id to fetch the relevant details)
-
+![alt text](https://github.com/rahul-ki/finalProj/blob/master/pictures/add-view%20tasks.JPG)
 5. If there are multiple people who can do the task, these people talk amongst them (off-chain negotiation) to decide who will do the task. This person then enters the task id for the task that they will do.
 
 6.  If this person (who was doing the task) is done with the task, he/she must now mark the task as completed.
 
-(Smart Contract checks that the address used to mark the task as completed is same as the address that was doing the task. This si done to prevent anyone else from sabotaging the task status.)
-
+(Smart Contract checks that the address used to mark the task as completed is same as the address that was doing the task. This is done to prevent anyone else from sabotaging the task status.)
+![alt text](https://github.com/rahul-ki/finalProj/blob/master/pictures/alert.JPG)
 7. Finally the task creator "verifies the task" off-chain and then if satisfied, logs the task as verified and does the payment. 
 
 The ether is sent to the person who was doing the task. As an added functionality, the task creator can decide to pay the initial amount (which is fetched using ipfs-api, since the JSON structure stores the reward), or the person can pay a different amount, if the task wasn't complete to his/her liking.
@@ -49,6 +49,7 @@ Now, about the **DASHBOARD** - The user hits the "see the tasks" button. The cod
 
 This is displayed by listening to various events that are fired as users interact with the system. The events help to filter and categorize a task into one of the 5 tables. Using IPFS-API, relevant details are once again fetched.
 
+![alt text](https://github.com/rahul-ki/finalProj/blob/master/pictures/dashboard.JPG)
 ## BUILD INSTRUCTIONS
 
 First clone my repo using `git clone https://github.com/rahul-ki/finalProj`. Then,

@@ -14,5 +14,3 @@ This is ensured by calling `require` statements.
 
 ### Separate Data & Method Logic
 A common design pattern is also to separate the parts of the contract that create and store all the state variables with the methods used to manipulate/modify the varibales. The `TaskHelper` contract defines all the state variables and the view methods, while the `TaskManager` contract deals with the methods that users interact with.
-
-### Upgradeability

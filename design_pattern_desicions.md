@@ -14,3 +14,6 @@ This is ensured by calling `require` statements.
 
 ### Separate Data & Method Logic
 A common design pattern is also to separate the parts of the contract that create and store all the state variables with the methods used to manipulate/modify the varibales. The `TaskHelper` contract defines all the state variables and the view methods, while the `TaskManager` contract deals with the methods that users interact with.
+
+### Securing Payment method
+I don't store any funds in the contract. All funds are immediately transferred to another address. I also don't user `transfer` but instead `send` which limits gas to 2300 in case any fallback method is called.

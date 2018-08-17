@@ -4,6 +4,9 @@
 I have added OpenZeppelin's Pausable.sol to implement an emergency stop button. On the rinkeby network, only I can call the `pause()` method 
 (since I have deployed it). As soon as the `pause()` method is called, none of my other methods can be performed since they all use the `whenNotPaused` modifier. This means no one can modify any of my state variables too. 
 
+### Fail early and fail loud
+Using `require` checks at the beginning of my methods allows only the right input parameters/ right addresses to interact, preventing any damage and reverting in case something is wrong.
+
 ### Restricting Access 
 Appropriate usage of modifiers like `onlyParent` and `correctChild` only allow certain addresses to call certain methods. For example: only a parent call call `verifyATask()`. Similarly, only a particular child address added by a parent can do a task (i.e. call `doingATask()`).
 
